@@ -35,21 +35,23 @@ class TeacherRepository(ITeacherRepository):
     def get_all(self) -> list[Teacher]:
         """Получить все направления."""
         rows = self._db.fetchall(
-            "SELECT first_name, last_name, email, phone FROM teachers ORDER BY name",
+            "SELECT id, first_name, last_name, email, phone FROM teachers ORDER BY id",
         )
-        return [
-            self._row_to_teacher(row)
-            for row in rows
-            
-        ]
+        return [self._row_to_teacher(row) for row in rows]
 
     def update(self, teacher: Teacher) -> bool:
         """Обновить направление."""
         if teacher.id is None:
             return False
         cursor = self._db.execute(
-            "UPDATE teachers SET first_name = ?, last_name = ?, email = ?, phone = ?, WHERE id = ?",
-            (teacher.first_name, teacher.last_name, teacher.email, teacher.phone, teacher.id),
+            "UPDATE teachers SET first_name = ?, last_name = ?, email = ?, phone = ? WHERE id = ?",
+            (
+                teacher.first_name,
+                teacher.last_name,
+                teacher.email,
+                teacher.phone,
+                teacher.id,
+            ),
         )
         return cursor.rowcount > 0
 
@@ -60,7 +62,8 @@ class TeacherRepository(ITeacherRepository):
             (teacher_id,),
         )
         return cursor.rowcount > 0
-    
+
+    @staticmethod
     def _row_to_teacher(row: object) -> Teacher:
         """Преобразовать строку БД в модель Teacher."""
         return Teacher(
@@ -72,6 +75,26 @@ class TeacherRepository(ITeacherRepository):
         )
 
 
+if __name__ == "__main__":
+    with Database() as db:
+        repo = TeacherRepository(db=db)
+
+        # teacher_1 = Teacher(
+        #     id=None,
+        #     first_name="Artem",
+        #     last_name="aaa",
+        #     email="email@gmail.com",
+        #     phone=123,
+        # )
+
+        # repo.add(teacher_1)
+
+        # teacher_update = Teacher(
+        #     id=1,
+        #     first_name="Artem_2",
+        #     last_name="asdlkfja",
+        # )
+        # repo.update(teacher_update)
 # if __name__ == "__main__":
 #     with Database() as db:
 #         repo = DirectionRepository(db)
