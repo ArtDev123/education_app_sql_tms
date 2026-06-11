@@ -1,18 +1,16 @@
 .PHONY: help install install-dev lint flake8 mypy run run-cli clean
 
-VENV := venv
+VENV := .venv
 PYTHON := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 FLAKE8 := $(VENV)/bin/flake8
 MYPY := $(VENV)/bin/mypy
 
-SOURCES := cli database models repositories services gui main.py
-
 help:
 	@echo "Доступные команды:"
 	@echo "  make install      — создать venv и установить зависимости"
 	@echo "  make install-dev  — установить dev-зависимости (flake8, mypy)"
-	@echo "  make lint         — запустить flake8
+	@echo "  make lint         — запустить flake8"
 	@echo "  make typecheck    — проверка типов"
 	@echo "  make run          — запустить GUI"
 	@echo "  make run-cli      — запустить консольное приложение"
@@ -26,9 +24,10 @@ install-dev: install
 	$(PIP) install -r requirements-dev.txt
 
 typecheck:
-	$(MYPY) $(SOURCES)
+	$(MYPY) .
 
-lint: $(FLAKE8) --jobs=1 $(SOURCES)
+lint:
+	$(FLAKE8) .
 
 run:
 	$(PYTHON) main.py
