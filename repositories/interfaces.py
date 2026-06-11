@@ -3,8 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Optional, TypeVar
 
-from models.entities import Direction
-
+from models.entities import Direction, Teacher
 T = TypeVar("T")
 
 
@@ -46,3 +45,12 @@ class IDirectionRepository(IRepository[Direction], ABC):
     # @abstractmethod
     # def get_by_name(self, name: str) -> Optional[Direction]:
     #     """Получить направление по точному названию."""
+
+
+class ITeacherRepository(IRepository[Teacher], ABC):
+    """Интерфейс репозитория учебных направлений."""
+    pass
+    # @abstractmethod
+    # def get_by_name(self, name: str) -> Optional[Direction]:
+    #     """Получить направление по точному названию."""
+
