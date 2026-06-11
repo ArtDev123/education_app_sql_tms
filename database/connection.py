@@ -1,11 +1,13 @@
 import sqlite3
 from typing import Any, cast
 from pathlib import Path
+
 DEFAULT_DB_PATH = Path(__file__).resolve().parent.parent / "data" / "portal.db"
+
 
 class Database:
     """Обёртка над sqlite3 с поддержкой контекстного менеджера."""
-    
+
     def __init__(self, db_path: Path | None = None) -> None:
         self.db_path = db_path or DEFAULT_DB_PATH
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -17,7 +19,7 @@ class Database:
             self._connection.row_factory = sqlite3.Row
             self._connection.execute("PRAGMA foreign_keys = ON")
         return self._connection
-    
+
     def close(self) -> None:
         if self._connection is not None:
             self._connection.close()
@@ -39,7 +41,7 @@ class Database:
         cursor = self.connect().execute(query, params)
         self.connect().commit()
         return cursor
-    
+
     def fetchone(
         self,
         query: str,
