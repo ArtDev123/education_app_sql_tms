@@ -13,8 +13,8 @@ class PortalApp:
 
     def __init__(self, db: Database) -> None:
         self._db = db
-        self._directions = DirectionRepository(db)
-        self._teachers = TeacherRepository(db)
+        self._directions_repo = DirectionRepository(db)
+        self._teachers_repo = TeacherRepository(db)
 
     def run(self) -> None:
         """Запустить главный цикл приложения."""
@@ -68,14 +68,14 @@ class PortalApp:
     def _add_direction(self) -> None:
         name = read_input("Название: ")
         description = read_input("Описание: ", required=False)
-        direction_id = self._directions.add(
+        direction_id = self._directions_repo.add(
             Direction(id=None, name=name, description=description)
         )
         print(f"Направление добавлено (id={direction_id}).")
         pause()
 
     def _list_directions(self) -> None:
-        items = self._directions.get_all()
+        items = self._directions_repo.get_all()
         if not items:
             print("Направления не найдены.")
         for item in items:
@@ -86,7 +86,7 @@ class PortalApp:
         direction_id = read_int("ID направления: ")
         if direction_id is None:
             return
-        item = self._directions.get_by_id(direction_id)
+        item = self._directions_repo.get_by_id(direction_id)
         if item is None:
             print("Направление не найдено.")
             pause()
@@ -96,7 +96,7 @@ class PortalApp:
         if description == "":
             description = item.description
         updated = Direction(id=item.id, name=name, description=description)
-        if self._directions.update(updated):
+        if self._directions_repo.update(updated):
             print("Направление обновлено.")
         else:
             print("Не удалось обновить.")
@@ -106,7 +106,7 @@ class PortalApp:
         direction_id = read_int("ID направления: ")
         if direction_id is None:
             return
-        if self._directions.delete(direction_id):
+        if self._directions_repo.delete(direction_id):
             print("Направление удалено.")
         else:
             print("Направление не найдено.")

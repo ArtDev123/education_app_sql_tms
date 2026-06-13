@@ -54,5 +54,7 @@ def init_schema(db: Database) -> None:
 
 
 if __name__ == "__main__":
+    print("started")
     with Database() as db:
         init_schema(db)
+    print("end")
