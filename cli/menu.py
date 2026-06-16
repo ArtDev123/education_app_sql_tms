@@ -1,11 +1,12 @@
 """Консольное меню учебного портала."""
 
-from cli.helpers import pause, read_input, read_int
+from cli.helpers import pause, read_input, read_int, read_date
 from database.connection import Database
 from database.schemas import init_schema
-from models.entities import Direction, Teacher
+from models.entities import Direction, Teacher, Student
 from repositories.directions import DirectionRepository
 from repositories.teachers import TeacherRepository
+from repositories.students import StudentRepository
 
 
 class PortalApp:
@@ -15,6 +16,7 @@ class PortalApp:
         self._db = db
         self._directions_repo = DirectionRepository(db)
         self._teachers_repo = TeacherRepository(db)
+        self._students_repo = StudentRepository(db)
 
     def run(self) -> None:
         """Запустить главный цикл приложения."""
@@ -32,11 +34,13 @@ class PortalApp:
         print("\n--- Главное меню ---")
         print("1. Направления")
         print("2. Преподаватели")
+        print("3. Студенты")
 
     def _dispatch(self, choice: str) -> None:
         handlers = {
             "1": self._direction_menu,
-            "2": self._teacher_menu, #todo
+            "2": self._teacher_menu,
+            "3": self._students_menu 
         }
         handler = handlers.get(choice)
         if handler:
@@ -84,6 +88,27 @@ class PortalApp:
             else:
                 print("Неверный пункт.")
 
+
+    def _students_menu(self) -> None:
+        while True:
+            print("\n--- Студенты ---")
+            print("1. Добавить  2. Показать все  3. Редактировать")
+            print("4. Удалить 0. Назад")
+            choice = read_input("Выберите: ")
+            if choice == "0":
+                return
+            if choice == "1":
+                self._add_student()
+            elif choice == "2":
+                self._list_students()
+            elif choice == "3":
+                self._edit_student()
+            elif choice == "4":
+                self._delete_student()
+            else:
+                print("Неверный пункт.")
+
+
     def _add_direction(self) -> None:
         name = read_input("Название: ")
         description = read_input("Описание: ", required=False)
@@ -104,6 +129,32 @@ class PortalApp:
         print(f"Учитель добавлен (id={teachers_id}).")
         pause()
 
+    def _add_student(self) -> None:
+        first_name = read_input("Имя: ")
+        last_name = read_input("Фамилия: ")
+        direction_id = read_int("ID направления: ")
+        if direction_id is None:
+            return
+        email = read_input("Email: ", required=False)
+        enrollment_date = read_date("Дата зачисления")
+        try:
+            student_id = self._students_repo.add(
+                Student(
+                    id=None,
+                    first_name=first_name,
+                    last_name=last_name,
+                    direction_id=direction_id,
+                    email=email,
+                    enrollment_date=enrollment_date,
+                )
+            )
+        except ValueError as e:
+            print(e)
+            pause()
+            return
+        print(f"Студент добавлен (id={student_id}).")
+        pause()
+
     def _list_directions(self) -> None:
         items = self._directions_repo.get_all()
         if not items:
@@ -119,6 +170,14 @@ class PortalApp:
         for item in items:
             print(f"[{item.id}], {item.first_name}, {item.last_name}, {item.email}, {item.phone}")
         pause()
+
+
+    def _list_students(self) -> None:
+        items = self._students_repo.get_all()
+        if not items:
+            print("Студент не найден")
+        for item in items:
+            print(f"[{item.id}], {item.first_name}, {item.last_name}, {item.direction_id}, {item.email}, {item.enrollment_date}")
 
     def _edit_direction(self) -> None:
         direction_id = read_int("ID направления: ")
@@ -160,6 +219,55 @@ class PortalApp:
             print("Учитель не найден.")
         pause()
 
+
+    def _edit_student(self) -> None:
+        student_id = read_int("ID студента: ")
+        if student_id is None:
+            return
+        
+        item = self._students_repo.get_by_id(student_id)
+
+        if item is None:
+            print("Студент не найден.")
+            pause()
+            return
+        
+        first_name = (
+            read_input(f"Имя [{item.first_name}]: ", required=False) or item.first_name
+        )
+        last_name = (
+            read_input(f"Фамилия [{item.last_name}]: ", required=False)
+            or item.last_name
+        )
+        direction_id = (
+            read_int(f"ID направления [{item.direction_id}]: ", required=False)
+            or item.direction_id
+        )
+        email = read_input(f"Email [{item.email}]: ", required=False) or item.email
+        enrollment_date = read_date("Дата зачисления") or item.enrollment_date
+
+        try:
+            updated = self._students_repo.update(
+                Student(
+                    id=student_id,
+                    first_name=first_name,
+                    last_name=last_name,
+                    direction_id=direction_id,
+                    email=email,
+                    enrollment_date=enrollment_date,
+                )
+            )
+        except ValueError as exc:
+            print(exc)
+            pause()
+            return
+        
+        if updated:
+            print("Студент обновлён.")
+        else:
+            print("Не удалось обновить.")
+        pause()
+
     def _delete_direction(self) -> None:
         direction_id = read_int("ID направления: ")
         if direction_id is None:
@@ -178,4 +286,15 @@ class PortalApp:
             print("Учитель удален.")
         else:
             print("Учитель не найден.")
+        pause()
+
+
+    def _delete_student(self) -> None:
+        student_id = read_int("ID студента: ")
+        if student_id is None:
+            return
+        if self._students_repo.delete(student_id):
+            print("Студен удален.")
+        else:
+            print("Студент не найден.")
         pause()
