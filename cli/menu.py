@@ -3,7 +3,7 @@
 from cli.helpers import pause, read_input, read_int
 from database.connection import Database
 from database.schemas import init_schema
-from models.entities import Direction
+from models.entities import Direction, Teacher
 from repositories.directions import DirectionRepository
 from repositories.teachers import TeacherRepository
 
@@ -31,12 +31,12 @@ class PortalApp:
     def _print_main_menu(self) -> None:
         print("\n--- Главное меню ---")
         print("1. Направления")
-        # print("2. Преподаватели")
+        print("2. Преподаватели")
 
     def _dispatch(self, choice: str) -> None:
         handlers = {
             "1": self._direction_menu,
-            # "2": self._teacher_menu, #todo
+            "2": self._teacher_menu, #todo
         }
         handler = handlers.get(choice)
         if handler:
@@ -65,6 +65,25 @@ class PortalApp:
             else:
                 print("Неверный пункт.")
 
+    def _teacher_menu(self) -> None:
+        while True:
+            print("\n--- Учителя ---")
+            print("1. Добавить  2. Показать все  3. Редактировать")
+            print("4. Удалить 0. Назад")
+            choice = read_input("Выберите: ")
+            if choice == "0":
+                return
+            if choice == "1":
+                self._add_teacher()
+            elif choice == "2":
+                self._list_teachers()
+            elif choice == "3":
+                self._edit_teacher()
+            elif choice == "4":
+                self._delete_teacher()
+            else:
+                print("Неверный пункт.")
+
     def _add_direction(self) -> None:
         name = read_input("Название: ")
         description = read_input("Описание: ", required=False)
@@ -74,12 +93,31 @@ class PortalApp:
         print(f"Направление добавлено (id={direction_id}).")
         pause()
 
+    def _add_teacher(self) -> None:
+        first_name = read_input("Имя: ")
+        last_name = read_input("Фамилия: ")
+        email = read_input("Email: ", required=False)
+        phone = read_input("Phone: ", required=False)
+        teachers_id = self._teachers_repo.add(
+            Teacher(id=None, first_name=first_name, last_name=last_name, email=email, phone=phone)
+        )
+        print(f"Учитель добавлен (id={teachers_id}).")
+        pause()
+
     def _list_directions(self) -> None:
         items = self._directions_repo.get_all()
         if not items:
             print("Направления не найдены.")
         for item in items:
             print(f"[{item.id}] {item.name} — {item.description or 'без описания'}")
+        pause()
+
+    def _list_teachers(self) -> None:
+        items = self._teachers_repo.get_all()
+        if not items:
+            print("Учителя не найдены.")
+        for item in items:
+            print(f"[{item.id}], {item.first_name}, {item.last_name}, {item.email}, {item.phone}")
         pause()
 
     def _edit_direction(self) -> None:
@@ -102,6 +140,26 @@ class PortalApp:
             print("Не удалось обновить.")
         pause()
 
+    def _edit_teacher(self) -> None:
+        teacher_id = read_int("ID учителя: ")
+        if teacher_id is None:
+            return
+        item = self._teachers_repo.get_by_id(teacher_id)
+        if item is None:
+            print("Учитель не найден.")
+            pause()
+            return
+        first_name = read_input(f"Имя [{item.first_name}]: ", required=False) or item.first_name
+        last_name = read_input(f"Фамилия [{item.last_name}]: ", required=False) or item.last_name
+        email = read_input(f"Email [{item.email}]: ", required=False) or item.email
+        phone = read_input(f"Телефон [{item.phone}]: ", required=False) or item.phone
+    
+        if self._teachers_repo.update(teacher=Teacher(id=teacher_id, first_name=first_name, last_name=last_name, email=email, phone=phone)):
+            print("Учитель обновлен.")
+        else:
+            print("Учитель не найден.")
+        pause()
+
     def _delete_direction(self) -> None:
         direction_id = read_int("ID направления: ")
         if direction_id is None:
@@ -110,4 +168,14 @@ class PortalApp:
             print("Направление удалено.")
         else:
             print("Направление не найдено.")
+        pause()
+
+    def _delete_teacher(self) -> None:
+        teacher_id = read_int("ID учителя: ")
+        if teacher_id is None:
+            return
+        if self._teachers_repo.delete(teacher_id):
+            print("Учитель удален.")
+        else:
+            print("Учитель не найден.")
         pause()
