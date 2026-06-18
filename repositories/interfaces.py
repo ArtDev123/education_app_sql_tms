@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Optional, TypeVar
 
-from models.entities import Direction, Teacher, Student
+from models.entities import Direction, Teacher, Student, Course
 
 T = TypeVar("T")
 
@@ -60,4 +60,8 @@ class ITeacherRepository(IRepository[Teacher], ABC):
 class IStudentsRepository(IRepository[Student], ABC):
     """Интерфейс репозитория студентов."""
 
+    pass
+
+class ICourseRepository(IRepository[Course], ABC):
+    """Интерфейс репозитория курсов"""
     pass

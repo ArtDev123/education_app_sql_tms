@@ -4,11 +4,13 @@ from cli.directions import DirectionDispatcher
 from cli.helpers import read_input
 from cli.students import StudentDispatcher
 from cli.teachers import TeacherDispatcher
+from cli.courses import CourseDispatcher
 from database.connection import Database
 from database.schemas import init_schema
 from repositories.directions import DirectionRepository
 from repositories.students import StudentRepository
 from repositories.teachers import TeacherRepository
+from repositories.courses import CourseRepository
 
 
 class PortalApp:
@@ -19,6 +21,7 @@ class PortalApp:
         self._directions = DirectionDispatcher(DirectionRepository(db))
         self._teachers = TeacherDispatcher(TeacherRepository(db))
         self._students = StudentDispatcher(StudentRepository(db))
+        self._courses = CourseDispatcher(CourseRepository(db))
 
     def run(self) -> None:
         """Запустить главный цикл приложения."""
@@ -37,12 +40,14 @@ class PortalApp:
         print("1. Направления")
         print("2. Преподаватели")
         print("3. Студенты")
+        print("4. Курсы")
 
     def _dispatch(self, choice: str) -> None:
         handlers = {
             "1": self._directions.run,
             "2": self._teachers.run,
             "3": self._students.run,
+            "4": self._courses.run,
         }
         handler = handlers.get(choice)
         if handler:

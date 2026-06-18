@@ -32,7 +32,6 @@ class Course:
     id: Optional[int]
     name: str
     direction_id: int
-    description: str = ""
     teacher_id: Optional[int] = None
 
 

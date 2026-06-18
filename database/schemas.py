@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS courses (
     id	INTEGER PRIMARY KEY AUTOINCREMENT,
     name	TEXT	NOT NULL,
     direction_id    INTEGER NOT NULL,
-    teacher_id      INTEGER NOT NULL,
+    teacher_id      INTEGER,
     FOREIGN KEY (direction_id) REFERENCES directions (id) ON DELETE CASCADE,
     FOREIGN KEY (teacher_id)   REFERENCES teachers (id)   ON DELETE SET NULL
 );
