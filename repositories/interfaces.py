@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Optional, TypeVar
 
-from models.entities import Direction, Teacher, Student, Course
+from models.entities import Course, Direction, Student, StudentResult, Teacher
 
 T = TypeVar("T")
 
@@ -64,4 +64,17 @@ class IStudentsRepository(IRepository[Student], ABC):
 
 class ICourseRepository(IRepository[Course], ABC):
     """Интерфейс репозитория курсов"""
+
     pass
+
+
+class IResultRepository(IRepository[StudentResult], ABC):
+    """Интерфейс репозитория оценок студентов."""
+
+    @abstractmethod
+    def get_by_student(self, student_id: int) -> list[StudentResult]:
+        """Получить оценки студента."""
+
+    @abstractmethod
+    def get_by_course(self, course_id: int) -> list[StudentResult]:
+        """Получить оценки по курсу."""
