@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Курсы — Учебный портал{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="page-header">
+        <h1>Курсы</h1>
+        <a class="btn" href="{{ url_for('courses.create') }}">Добавить</a>
+    </div>
+    {% if items %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Направление</th>
+                <th>Преподаватель</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.direction_id }}</td>
+                <td>{{ item.teacher_id or '—' }}</td>
+                <td class="actions">
+                    <a class="btn btn-small btn-secondary" href="{{ url_for('courses.edit', item_id=item.id) }}">Изменить</a>
+                    <form method="post" action="{{ url_for('courses.delete', item_id=item.id) }}">
+                        <button class="btn btn-small btn-danger" type="submit">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Курсы не найдены.</p>
+    {% endif %}
+</div>
+{% endblock %}

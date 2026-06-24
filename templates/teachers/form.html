@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{% if item %}Редактирование{% else %}Новый{% endif %} преподаватель{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>{% if item %}Редактировать преподавателя{% else %}Добавить преподавателя{% endif %}</h1>
+    <form method="post">
+        <label for="first_name">Имя</label>
+        <input id="first_name" name="first_name" value="{{ item.first_name if item else '' }}" required>
+
+        <label for="last_name">Фамилия</label>
+        <input id="last_name" name="last_name" value="{{ item.last_name if item else '' }}" required>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" value="{{ item.email if item else '' }}">
+
+        <label for="phone">Телефон</label>
+        <input id="phone" name="phone" value="{{ item.phone if item else '' }}">
+
+        <div class="form-actions">
+            <button class="btn" type="submit">Сохранить</button>
+            <a class="btn btn-secondary" href="{{ url_for('teachers.list_items') }}">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

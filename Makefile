@@ -13,8 +13,9 @@ help:
 	@echo   make install-dev  - установить dev-зависимости (flake8, mypy)
 	@echo   make lint         - запустить flake8
 	@echo   make typecheck    - проверка типов
-	@echo   make run          - запустить GUI
+	@echo   make run          - запустить веб-интерфейс
 	@echo   make run-cli      - запустить консольное приложение
+	@echo   make run-web      - запустить веб-интерфейс Flask
 	@echo   make clean        - удалить кэш Python
 
 install:
@@ -31,10 +32,13 @@ lint:
 	$(PYTHON) -m flake8 .
 
 run:
-	$(PYTHON) main.py
+	$(PYTHON) main.py --web
 
 run-cli:
 	$(PYTHON) main.py --cli
+
+run-web:
+	$(PYTHON) main.py --web
 
 clean:
 	@if exist .mypy_cache rmdir /s /q .mypy_cache

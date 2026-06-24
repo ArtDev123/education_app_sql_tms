@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Направления — Учебный портал{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="page-header">
+        <h1>Направления</h1>
+        <a class="btn" href="{{ url_for('directions.create') }}">Добавить</a>
+    </div>
+    {% if items %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Описание</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.description or '—' }}</td>
+                <td class="actions">
+                    <a class="btn btn-small btn-secondary" href="{{ url_for('directions.edit', item_id=item.id) }}">Изменить</a>
+                    <form method="post" action="{{ url_for('directions.delete', item_id=item.id) }}">
+                        <button class="btn btn-small btn-danger" type="submit">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Направления не найдены.</p>
+    {% endif %}
+</div>
+{% endblock %}

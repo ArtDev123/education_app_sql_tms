@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Оценки — Учебный портал{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="page-header">
+        <h1>Оценки</h1>
+        <a class="btn" href="{{ url_for('results.create') }}">Добавить</a>
+    </div>
+
+    <form class="filters" method="get" action="{{ url_for('results.list_items') }}">
+        <div>
+            <label for="student_id">По студенту</label>
+            <select id="student_id" name="student_id">
+                <option value="">Все</option>
+                {% for student in students %}
+                <option value="{{ student.id }}"
+                    {% if filter_student_id == student.id %}selected{% endif %}>
+                    [{{ student.id }}] {{ student.first_name }} {{ student.last_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="course_id">По курсу</label>
+            <select id="course_id" name="course_id">
+                <option value="">Все</option>
+                {% for course in courses %}
+                <option value="{{ course.id }}"
+                    {% if filter_course_id == course.id %}selected{% endif %}>
+                    [{{ course.id }}] {{ course.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="btn btn-small" type="submit">Показать</button>
+        <a class="btn btn-small btn-secondary" href="{{ url_for('results.list_items') }}">Сбросить</a>
+    </form>
+
+    {% if items %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Студент</th>
+                <th>Курс</th>
+                <th>Оценка</th>
+                <th>Экзамен</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.student_id }}</td>
+                <td>{{ item.course_id }}</td>
+                <td>{{ item.grade }}</td>
+                <td>{{ item.exam_date or '—' }}</td>
+                <td class="actions">
+                    <a class="btn btn-small btn-secondary" href="{{ url_for('results.edit', item_id=item.id) }}">Изменить</a>
+                    <form method="post" action="{{ url_for('results.delete', item_id=item.id) }}">
+                        <button class="btn btn-small btn-danger" type="submit">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Оценки не найдены.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,1 +1,1 @@
-# Runtime dependencies (add packages as the application grows)
+Flask>=3.0,<4

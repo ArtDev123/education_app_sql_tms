@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{% if item %}Редактирование{% else %}Новый{% endif %} курс{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>{% if item %}Редактировать курс{% else %}Добавить курс{% endif %}</h1>
+    <form method="post">
+        <label for="name">Название</label>
+        <input id="name" name="name" value="{{ item.name if item else '' }}" required>
+
+        <label for="direction_id">Направление</label>
+        <select id="direction_id" name="direction_id" required>
+            <option value="">— выберите —</option>
+            {% for direction in directions %}
+            <option value="{{ direction.id }}"
+                {% if item and item.direction_id == direction.id %}selected{% endif %}>
+                [{{ direction.id }}] {{ direction.name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label for="teacher_id">Преподаватель</label>
+        <select id="teacher_id" name="teacher_id">
+            <option value="">— не назначен —</option>
+            {% for teacher in teachers %}
+            <option value="{{ teacher.id }}"
+                {% if item and item.teacher_id == teacher.id %}selected{% endif %}>
+                [{{ teacher.id }}] {{ teacher.first_name }} {{ teacher.last_name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <div class="form-actions">
+            <button class="btn" type="submit">Сохранить</button>
+            <a class="btn btn-secondary" href="{{ url_for('courses.list_items') }}">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

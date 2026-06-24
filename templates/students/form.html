@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{% if item %}Редактирование{% else %}Новый{% endif %} студент{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>{% if item %}Редактировать студента{% else %}Добавить студента{% endif %}</h1>
+    <form method="post">
+        <label for="first_name">Имя</label>
+        <input id="first_name" name="first_name" value="{{ item.first_name if item else '' }}" required>
+
+        <label for="last_name">Фамилия</label>
+        <input id="last_name" name="last_name" value="{{ item.last_name if item else '' }}" required>
+
+        <label for="direction_id">Направление</label>
+        <select id="direction_id" name="direction_id" required>
+            <option value="">— выберите —</option>
+            {% for direction in directions %}
+            <option value="{{ direction.id }}"
+                {% if item and item.direction_id == direction.id %}selected{% endif %}>
+                [{{ direction.id }}] {{ direction.name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" value="{{ item.email if item else '' }}">
+
+        <label for="enrollment_date">Дата зачисления</label>
+        <input id="enrollment_date" name="enrollment_date" type="date"
+            value="{{ item.enrollment_date.isoformat() if item and item.enrollment_date else '' }}">
+
+        <div class="form-actions">
+            <button class="btn" type="submit">Сохранить</button>
+            <a class="btn btn-secondary" href="{{ url_for('students.list_items') }}">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

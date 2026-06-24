@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Преподаватели — Учебный портал{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="page-header">
+        <h1>Преподаватели</h1>
+        <a class="btn" href="{{ url_for('teachers.create') }}">Добавить</a>
+    </div>
+    {% if items %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Фамилия</th>
+                <th>Email</th>
+                <th>Телефон</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.first_name }}</td>
+                <td>{{ item.last_name }}</td>
+                <td>{{ item.email or '—' }}</td>
+                <td>{{ item.phone or '—' }}</td>
+                <td class="actions">
+                    <a class="btn btn-small btn-secondary" href="{{ url_for('teachers.edit', item_id=item.id) }}">Изменить</a>
+                    <form method="post" action="{{ url_for('teachers.delete', item_id=item.id) }}">
+                        <button class="btn btn-small btn-danger" type="submit">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">Преподаватели не найдены.</p>
+    {% endif %}
+</div>
+{% endblock %}

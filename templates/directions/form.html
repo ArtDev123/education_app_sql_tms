@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}{% if item %}Редактирование{% else %}Новое{% endif %} направление{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>{% if item %}Редактировать направление{% else %}Добавить направление{% endif %}</h1>
+    <form method="post">
+        <label for="name">Название</label>
+        <input id="name" name="name" value="{{ item.name if item else '' }}" required>
+
+        <label for="description">Описание</label>
+        <textarea id="description" name="description" rows="3">{{ item.description if item else '' }}</textarea>
+
+        <div class="form-actions">
+            <button class="btn" type="submit">Сохранить</button>
+            <a class="btn btn-secondary" href="{{ url_for('directions.list_items') }}">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
