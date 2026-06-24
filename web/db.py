@@ -5,6 +5,7 @@ from flask import g
 from database.connection import Database
 from database.schemas import init_schema
 from repositories.directions import DirectionRepository
+from repositories.teachers import TeacherRepository
 
 
 def init_db() -> None:
@@ -24,3 +25,6 @@ def close_db(exc: BaseException | None = None) -> None:
 
 def direction_repo() -> DirectionRepository:
     return DirectionRepository(g.db)
+
+def teacher_repo() -> TeacherRepository:
+    return TeacherRepository(g.db)
