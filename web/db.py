@@ -6,7 +6,7 @@ from database.connection import Database
 from database.schemas import init_schema
 from repositories.directions import DirectionRepository
 from repositories.teachers import TeacherRepository
-
+from repositories.courses import CourseRepository
 
 def init_db() -> None:
     """Открыть соединение с БД для текущего запроса."""
@@ -28,3 +28,6 @@ def direction_repo() -> DirectionRepository:
 
 def teacher_repo() -> TeacherRepository:
     return TeacherRepository(g.db)
+
+def course_repo() -> CourseRepository:
+    return CourseRepository(g.db)
