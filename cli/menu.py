@@ -3,7 +3,6 @@
 from cli.directions import DirectionDispatcher
 from cli.helpers import read_input
 from database.connection import Database
-from database.schemas import init_schema
 from repositories.directions import DirectionRepository
 
 
@@ -16,7 +15,6 @@ class PortalApp:
 
     def run(self) -> None:
         """Запустить главный цикл приложения."""
-        init_schema(self._db)
         print("=== Учебный портал ===")
         while True:
             self._print_main_menu()

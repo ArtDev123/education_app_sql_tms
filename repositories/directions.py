@@ -2,67 +2,75 @@
 
 from typing import Optional
 
-from database.connection import Database
+from sqlalchemy.orm import Session
+from sqlalchemy import select
+
 from models.entities import Direction
-from repositories.base import require_lastrowid
+from models.direction_model import DirectionModel
+from database.session import SessionLocal
 from repositories.interfaces import IDirectionRepository
 
 
 class DirectionRepository(IDirectionRepository):
     """CRUD-операции для направлений."""
 
-    def __init__(self, db: Database) -> None:
-        self._db = db
+    def __init__(self, session: Session) -> None:
+        self._session = session
 
     def add(self, direction: Direction) -> int:
         """Добавить направление."""
-        cursor = self._db.execute(
-            "INSERT INTO directions (name, description) VALUES (?, ?)",
-            (direction.name, direction.description),
+        direction_model = DirectionModel(
+            name=direction.name, description=direction.description
         )
-        return require_lastrowid(cursor)
+        self._session.add(direction_model)
+        self._session.commit()
+        return direction_model.id
 
     def get_by_id(self, direction_id: int) -> Optional[Direction]:
         """Получить направление по ID."""
-        row = self._db.fetchone(
-            "SELECT id, name, description FROM directions WHERE id = ?",
-            (direction_id,),
-        )
-        if row is None:
+        direction_model = self._session.get(DirectionModel, direction_id)
+        if direction_model is None:
             return None
-        return Direction(id=row["id"], name=row["name"], description=row["description"])
+        return self._model_to_dataclass(direction_model)
 
     def get_all(self) -> list[Direction]:
         """Получить все направления."""
-        rows = self._db.fetchall(
-            "SELECT id, name, description FROM directions ORDER BY name",
-        )
-        return [
-            Direction(id=row["id"], name=row["name"], description=row["description"])
-            for row in rows
-        ]
+        stmt = select(DirectionModel).order_by(DirectionModel.name)
+        directions: list[DirectionModel] = self._session.scalars(stmt).all()
+        return [self._model_to_dataclass(direction) for direction in directions]
 
     def update(self, direction: Direction) -> bool:
         """Обновить направление."""
         if direction.id is None:
             return False
-        cursor = self._db.execute(
-            "UPDATE directions SET name = ?, description = ? WHERE id = ?",
-            (direction.name, direction.description, direction.id),
-        )
-        return cursor.rowcount > 0
+        direction_model = self._session.get(DirectionModel, direction.id)
+        direction_model.name = direction.name
+        direction_model.description = direction.description
+        self._session.commit()
+        return True
 
     def delete(self, direction_id: int) -> bool:
         """Удалить направление."""
-        cursor = self._db.execute(
-            "DELETE FROM directions WHERE id = ?",
-            (direction_id,),
+        direction_model = self._session.get(DirectionModel, direction_id)
+        if direction_model is not None:
+            self._session.delete(direction_model)
+            self._session.commit()
+            return True
+        return False
+
+    @staticmethod
+    def _model_to_dataclass(model: DirectionModel) -> Direction:
+        return Direction(
+            id=model.id,
+            name=model.name,
+            description=model.description,
         )
-        return cursor.rowcount > 0
 
 
 if __name__ == "__main__":
-    with Database() as db:
-        repo = DirectionRepository(db)
-        dir1 = Direction(id=None, name="прога")
-        repo.add(dir1)
+    with SessionLocal() as session:
+        repo = DirectionRepository(session)
+        # dir1 = Direction(id=None, name="прога")
+        # repo.add(dir1)
+        directions = repo.get_all()
+        print(directions)
