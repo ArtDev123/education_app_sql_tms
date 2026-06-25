@@ -8,6 +8,8 @@ from repositories.directions import DirectionRepository
 from repositories.teachers import TeacherRepository
 from repositories.courses import CourseRepository
 from repositories.students import StudentRepository
+from repositories.results import ResultRepository
+
 
 
 def init_db() -> None:
@@ -39,3 +41,6 @@ def course_repo() -> CourseRepository:
 
 def student_repo() -> StudentRepository:
     return StudentRepository(g.db)
+
+def results_repo() -> ResultRepository:
+    return ResultRepository(g.db)
