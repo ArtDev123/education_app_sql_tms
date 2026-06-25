@@ -26,7 +26,9 @@ def main() -> None:
     """Запустить приложение в выбранном режиме."""
     parser = argparse.ArgumentParser(description="Учебный портал")
     parser.add_argument("--web", action="store_true", help="запустить веб-интерфейс")
-    parser.add_argument("--cli", action="store_true", help="запустить консольный интерфейс")
+    parser.add_argument(
+        "--cli", action="store_true", help="запустить консольный интерфейс"
+    )
     args = parser.parse_args()
 
     if args.web:

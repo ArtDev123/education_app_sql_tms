@@ -57,10 +57,12 @@ class ITeacherRepository(IRepository[Teacher], ABC):
     # def get_by_name(self, name: str) -> Optional[Direction]:
     #     """Получить направление по точному названию."""
 
+
 class IStudentsRepository(IRepository[Student], ABC):
     """Интерфейс репозитория студентов."""
 
     pass
+
 
 class ICourseRepository(IRepository[Course], ABC):
     """Интерфейс репозитория курсов"""

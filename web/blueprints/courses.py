@@ -30,10 +30,16 @@ def create() -> str:
         elif teacher_id and not is_valid_int(teacher_id):
             flash("ID учителя некорректный.", "error")
         else:
-            course_repo().add(Course(id=None, name= name, direction_id=direction_id, teacher_id=teacher_id))
+            course_repo().add(
+                Course(
+                    id=None, name=name, direction_id=direction_id, teacher_id=teacher_id
+                )
+            )
             flash("Курс добавлен.", "success")
             return redirect(url_for("courses.list_items"))
-    return render_template("courses/form.html", item=None, directions = directions, teachers = teachers)
+    return render_template(
+        "courses/form.html", item=None, directions=directions, teachers=teachers
+    )
 
 
 @bp.route("/<int:item_id>/edit", methods=["GET", "POST"])
@@ -54,12 +60,18 @@ def edit(item_id: int) -> str:
             flash("ID направления некорректный.", "error")
         elif teacher_id and not is_valid_int(teacher_id):
             flash("ID учителя некорректный.", "error")
-        elif course_repo().update(Course(id=item.id, name=name, direction_id=direction_id, teacher_id=teacher_id)):
+        elif course_repo().update(
+            Course(
+                id=item.id, name=name, direction_id=direction_id, teacher_id=teacher_id
+            )
+        ):
             flash("Курс обновлен.", "success")
             return redirect(url_for("courses.list_items"))
         else:
             flash("Не удалось. ", "error")
-    return render_template("courses/form.html", item=item, directions=directions, teachers=teachers)
+    return render_template(
+        "courses/form.html", item=item, directions=directions, teachers=teachers
+    )
 
 
 @bp.post("/<int:item_id>/delete")

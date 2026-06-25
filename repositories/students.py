@@ -8,6 +8,7 @@ from repositories.base import require_lastrowid, format_date, parse_date
 from repositories.interfaces import IStudentsRepository
 from repositories.directions import DirectionRepository
 
+
 class StudentRepository(IStudentsRepository):
     """Студенты."""
 
@@ -18,10 +19,18 @@ class StudentRepository(IStudentsRepository):
     def add(self, student: Student) -> int:
         """Добавить студента."""
         if self._direction_repo.get_by_id(direction_id=student.direction_id) is None:
-            raise ValueError (f'Направление с Id: {student.direction_id} - не существует')
+            raise ValueError(
+                f"Направление с Id: {student.direction_id} - не существует"
+            )
         cursor = self._db.execute(
             "INSERT INTO students (first_name, last_name, email, direction_id, enrollment_date) VALUES (?, ?, ?, ?, ?)",
-            (student.first_name, student.last_name, student.email, student.direction_id, format_date(student.enrollment_date)),
+            (
+                student.first_name,
+                student.last_name,
+                student.email,
+                student.direction_id,
+                format_date(student.enrollment_date),
+            ),
         )
         return require_lastrowid(cursor)
 
@@ -35,7 +44,6 @@ class StudentRepository(IStudentsRepository):
             return None
         return self._row_to_student(row)
 
-
     def get_all(self) -> list[Student]:
         """Получить всех студентов."""
         rows = self._db.fetchall(
@@ -48,7 +56,9 @@ class StudentRepository(IStudentsRepository):
         if student.id is None:
             return False
         if self._direction_repo.get_by_id(direction_id=student.direction_id) is None:
-            raise ValueError (f'Направление с Id: {student.direction_id} - не существует')
+            raise ValueError(
+                f"Направление с Id: {student.direction_id} - не существует"
+            )
         cursor = self._db.execute(
             "UPDATE students SET first_name = ?, last_name = ?, email = ?, direction_id = ?, enrollment_date = ? WHERE id = ?",
             (
@@ -79,17 +89,18 @@ class StudentRepository(IStudentsRepository):
             last_name=row["last_name"],  # type: ignore[index]
             email=row["email"],  # type: ignore[index]
             direction_id=row["direction_id"],  # type: ignore[index]
-            enrollment_date=parse_date(row["enrollment_date"]), # type: ignore[index]
+            enrollment_date=parse_date(row["enrollment_date"]),  # type: ignore[index]
         )
 
 
 if __name__ == "__main__":
     with Database() as db:
         repo = StudentRepository(db=db)
-        from models.entities import Direction 
+        from models.entities import Direction
         from datetime import date
+
         direction_repo = DirectionRepository(db)
-        direction1 = Direction(id = None, name = 'Evgeni') 
+        direction1 = Direction(id=None, name="Evgeni")
         direction_repo.add(direction1)
 
         student_1 = Student(
@@ -98,12 +109,12 @@ if __name__ == "__main__":
             last_name="aaa",
             email="email@gmail.com",
             direction_id=1,
-            enrollment_date=date(year=1996, month=4, day=26)
+            enrollment_date=date(year=1996, month=4, day=26),
         )
-            
+
         repo.add(student_1)
         print(repo.get_by_id(1))
-    
+
         # Student_update = Student(
         #     id=1,
         #     first_name="Artem_2",

@@ -24,7 +24,15 @@ def create() -> str:
         if not first_name or not last_name or not email or not phone:
             flash("Все поля обязательны.", "error")
         else:
-            teacher_repo().add(Teacher(id=None, first_name= first_name, last_name= last_name, email= email, phone= phone))
+            teacher_repo().add(
+                Teacher(
+                    id=None,
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    phone=phone,
+                )
+            )
             flash("Учитель добавлен.", "success")
             return redirect(url_for("teachers.list_items"))
     return render_template("teachers/form.html", item=None)
@@ -44,7 +52,13 @@ def edit(item_id: int) -> str:
         if not first_name or not last_name or not email or not phone:
             flash("Все поля обязательны.", "error")
         elif teacher_repo().update(
-            Teacher(id=item.id, first_name= first_name, last_name= last_name, email= email, phone= phone)
+            Teacher(
+                id=item.id,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=phone,
+            )
         ):
             flash("Учитель обновлен.", "success")
             return redirect(url_for("teachers.list_items"))

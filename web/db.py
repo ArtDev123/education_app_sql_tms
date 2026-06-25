@@ -7,6 +7,8 @@ from database.schemas import init_schema
 from repositories.directions import DirectionRepository
 from repositories.teachers import TeacherRepository
 from repositories.courses import CourseRepository
+from repositories.students import StudentRepository
+
 
 def init_db() -> None:
     """Открыть соединение с БД для текущего запроса."""
@@ -26,8 +28,14 @@ def close_db(exc: BaseException | None = None) -> None:
 def direction_repo() -> DirectionRepository:
     return DirectionRepository(g.db)
 
+
 def teacher_repo() -> TeacherRepository:
     return TeacherRepository(g.db)
 
+
 def course_repo() -> CourseRepository:
     return CourseRepository(g.db)
+
+
+def student_repo() -> StudentRepository:
+    return StudentRepository(g.db)

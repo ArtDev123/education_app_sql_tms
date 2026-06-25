@@ -21,10 +21,10 @@ class CourseRepository(ICourseRepository):
     def add(self, course: Course) -> int:
         """Добавить курс"""
         if self._direction_repo.get_by_id(direction_id=course.direction_id) is None:
-            raise ValueError (f'Направление с Id: {course.direction_id} - не существует')
+            raise ValueError(f"Направление с Id: {course.direction_id} - не существует")
         if course.teacher_id is not None:
             if self._teacher_repo.get_by_id(teacher_id=course.teacher_id) is None:
-                raise ValueError (f'Учитель с Id: {course.teacher_id} - не существует')
+                raise ValueError(f"Учитель с Id: {course.teacher_id} - не существует")
         cursor = self._db.execute(
             "INSERT INTO courses (name, direction_id, teacher_id) VALUES (?, ?, ?)",
             (course.name, course.direction_id, course.teacher_id),
@@ -35,7 +35,7 @@ class CourseRepository(ICourseRepository):
         """Получить курс по ID."""
         row = self._db.fetchone(
             "SELECT id, name, direction_id, teacher_id FROM courses WHERE id = ?",
-            (course_id,)
+            (course_id,),
         )
         if row is None:
             return None
@@ -46,20 +46,17 @@ class CourseRepository(ICourseRepository):
         rows = self._db.fetchall(
             "SELECT id, name, teacher_id, direction_id FROM courses ORDER BY name",
         )
-        return [
-            self._row_to_course(row)
-            for row in rows
-        ]
+        return [self._row_to_course(row) for row in rows]
 
     def update(self, course: Course) -> bool:
         """Обновить курс."""
         if course.id is None:
             return False
         if self._direction_repo.get_by_id(direction_id=course.direction_id) is None:
-            raise ValueError (f'Направление с Id: {course.direction_id} - не существует')
+            raise ValueError(f"Направление с Id: {course.direction_id} - не существует")
         if course.teacher_id is not None:
             if self._teacher_repo.get_by_id(teacher_id=course.teacher_id) is None:
-                raise ValueError (f'Учитель с Id: {course.teacher_id} - не существует')
+                raise ValueError(f"Учитель с Id: {course.teacher_id} - не существует")
         cursor = self._db.execute(
             "UPDATE courses SET name = ?, teacher_id = ?, direction_id = ? WHERE id = ?",
             (course.name, course.teacher_id, course.direction_id, course.id),
@@ -73,7 +70,7 @@ class CourseRepository(ICourseRepository):
             (course_id,),
         )
         return cursor.rowcount > 0
-    
+
     @staticmethod
     def _row_to_course(row: object) -> Course:
         """Преобразовать строку БД в модель Teacher."""
@@ -88,5 +85,5 @@ class CourseRepository(ICourseRepository):
 if __name__ == "__main__":
     with Database() as db:
         repo = CourseRepository(db)
-        dir1 = Course(id=None, name="прога", direction_id=1, teacher_id= 1)
+        dir1 = Course(id=None, name="прога", direction_id=1, teacher_id=1)
         repo.add(dir1)

@@ -7,8 +7,10 @@ from flask import Flask, render_template
 from web.blueprints.directions import bp as directions_bp
 from web.blueprints.teachers import bp as teachers_bp
 from web.blueprints.courses import bp as courses_bp
+from web.blueprints.students import bp as students_bp
 
 from web.db import close_db, init_db
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,7 +30,7 @@ def create_app() -> Flask:
     app.register_blueprint(directions_bp)
     app.register_blueprint(teachers_bp)
     app.register_blueprint(courses_bp)
-
+    app.register_blueprint(students_bp)
 
     @app.route("/")
     def index() -> str:
